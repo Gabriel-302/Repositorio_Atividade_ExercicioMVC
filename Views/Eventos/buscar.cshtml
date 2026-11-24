@@ -1,39 +1,62 @@
-@using ExercicioMVC.ViewModels
-
-@model BuscaEventoViewModel
+@model ExercicioMVC.ViewModels.BuscaEventoViewModel
 @{
-    ViewData["Title"] = "Cadastrar novo Evento";
+    ViewData["Title"] = "Buscar Evento";
 }
 
 <h1>Buscar evento</h1>
 <form asp-action="Buscar" method="post">
-    <input asp-for="NomeBusca" placeholder="Evento..." />
-    <input asp-for="LocalBusca" placeholder="Local..." />
-    <input asp-for="DataEventoBusca" type="date" class="text-danger" placeholder="Data do Evento..." />
-    <button type="submit">Buscar</button>
+    @* Exibe erros gerais (ex: nenhum critério preenchido ou combinação não encontrada) *@
+    <div asp-validation-summary="ModelOnly" class="text-danger" style="color: red;"></div>
+
+        <div>
+            <input asp-for="NomeBusca" placeholder="Evento..." />
+            <span asp-validation-for="NomeBusca" class="text-danger" style="color: red;"></span>
+        </div>
+
+        <div>
+            <input asp-for="LocalBusca" placeholder="Local..." />
+            <span asp-validation-for="LocalBusca" class="text-danger" style="color: red;"></span>
+        </div>
+
+        <div>
+            <input asp-for="DataEventoBusca" type="date" />
+            <span asp-validation-for="DataEventoBusca" class="text-danger" style="color: red;"></span>
+        </div>
+
+        <button type="submit">Buscar</button>
 </form>
 
-@if(Model.Resultados.Any())
+@if (Model?.Resultados != null && Model.Resultados.Any())
 {
-    <table>
-    <tr>
-        <th>Nome</th>
-        <th>Descricao</th>
-        <th>Local</th>
-        <th>Data do Evento</th>
-        <th>Quantidade de Vagas</th>
-        <th>Valor do Ingresso</th>
-    </tr>
-    @foreach (Evento a in Model.Resultados)
-    {
-        <tr>
-            <td>@a.Nome</td>
-            <td>@a.Descricao</td>
-            <td>@a.Local</td>
-            <td>@a.DataEvento</td>
-            <td>@a.QuantidadeVagas</td>
-            <td>@a.ValorIngresso</td>
-        </tr>
-    }
-</table>
+    <table border="1" cellpadding="8" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Local</th>
+                <th>Data</th>
+                <th>Vagas</th>
+                <th>Valor do Ingresso</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var evento in Model.Resultados)
+            {
+                <tr>
+                    <td>@evento.Nome</td>
+                    <td>@evento.Local</td>
+                    <td>@evento.DataEvento.ToString("dd/MM/yyyy")</td>
+                    <td>@evento.QuantidadeVagas</td>
+                    <td>@evento.ValorIngresso.ToString("C")</td>
+                    <td>
+                        <a asp-action="Detalhes" asp-route-id="@evento.Id">Detalhes</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else if (Model?.Resultados != null && !Model.Resultados.Any())
+{
+    <p>Nenhum evento encontrado com os critérios informados.</p>
 }

@@ -68,51 +68,66 @@ namespace ExercicioMVC.Controllers
 
         // POST /Eventos/Buscar
         [HttpPost]
-        public IActionResult Buscar(BuscaEventoViewModel vm) 
+        public IActionResult Buscar(BuscaEventoViewModel vm)
         {
             if (string.IsNullOrWhiteSpace(vm.NomeBusca) && string.IsNullOrWhiteSpace(vm.LocalBusca) && !vm.DataEventoBusca.HasValue)
             {
-                ModelState.AddModelError(string.Empty, "Informe pelo menos um critério (nome, local ou data) para pesquisar.");
                 return View(vm);
             }
 
+            var query = _eventos.AsEnumerable();
+
             if (!string.IsNullOrWhiteSpace(vm.NomeBusca))
             {
-                if (!_eventos.Any(a => a.Nome.Contains(vm.NomeBusca, StringComparison.OrdinalIgnoreCase)))
+                var nome = vm.NomeBusca.Trim();
+
+                if (_eventos.Any(a => a.Nome != null && a.Nome.Contains(nome, StringComparison.OrdinalIgnoreCase)))
+                {
+                    query = query.Where(e => e.Nome != null && e.Nome.Contains(nome, StringComparison.OrdinalIgnoreCase));
+                }
+                else
                 {
                     ModelState.AddModelError(nameof(vm.NomeBusca), "Não existe nenhum evento com o nome informado.");
-                    return View(vm);
                 }
-
-                vm.Resultados = _eventos
-                .Where(e => e.Nome.Contains(vm.NomeBusca, StringComparison.OrdinalIgnoreCase))
-                .ToList();
             }
 
             if (!string.IsNullOrWhiteSpace(vm.LocalBusca))
             {
-                if (!_eventos.Any(a => a.Local.Contains(vm.LocalBusca, StringComparison.OrdinalIgnoreCase)))
+                var local = vm.LocalBusca.Trim();
+
+                if (_eventos.Any(a => a.Local != null && a.Local.Contains(local, StringComparison.OrdinalIgnoreCase)))
+                {
+                    query = query.Where(e => e.Local != null && e.Local.Contains(local, StringComparison.OrdinalIgnoreCase));
+                }
+                else
                 {
                     ModelState.AddModelError(nameof(vm.LocalBusca), "Não existe nenhum evento no local informado.");
-                    return View(vm);
                 }
-
-                vm.Resultados = _eventos
-                .Where(e => e.Local.Contains(vm.LocalBusca, StringComparison.OrdinalIgnoreCase))
-                .ToList();
             }
 
             if (vm.DataEventoBusca.HasValue)
             {
-                if (!_eventos.Any(a => a.DataEvento.Date == vm.DataEventoBusca.Value.Date))
+                var data = vm.DataEventoBusca.Value.Date;
+
+                // Se DataEvento na model Evento for DateTime?, use: a.DataEvento?.Date == data
+                if (_eventos.Any(a => a.DataEvento.Date == data))
+                {
+                    query = query.Where(e => e.DataEvento.Date == data);
+                }
+                else
                 {
                     ModelState.AddModelError(nameof(vm.DataEventoBusca), "Não existe nenhum evento na data informada.");
-                    return View(vm);
                 }
+            }
 
-                vm.Resultados = _eventos
-                .Where(e => e.DataEvento.Date == vm.DataEventoBusca.Value.Date)
-                .ToList();
+            if (ModelState.IsValid)
+            {
+                vm.Resultados = query.ToList();
+
+                if (!vm.Resultados.Any())
+                {
+                    ModelState.AddModelError(string.Empty, "Nenhum evento encontrado combinando todos os filtros informados.");
+                }
             }
 
             return View(vm);

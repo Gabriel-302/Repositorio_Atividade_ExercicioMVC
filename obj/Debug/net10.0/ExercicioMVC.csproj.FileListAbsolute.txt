@@ -95,3 +95,4 @@ C:\Users\49966629807\Desktop\Exercicios Praticos\ExercicioMVC\obj\Debug\net10.0\
 C:\Users\49966629807\Desktop\Exercicios Praticos\ExercicioMVC\obj\Debug\net10.0\ExercicioMVC.genruntimeconfig.cache
 C:\Users\49966629807\Desktop\Exercicios Praticos\ExercicioMVC\obj\Debug\net10.0\ref\ExercicioMVC.dll
 C:\Users\49966629807\Desktop\Exercicios Praticos\ExercicioMVC\obj\Debug\net10.0\compressed\1qpzm76kdw-{0}-xjej0ed6iu-xjej0ed6iu.gz
+C:\Users\49966629807\Desktop\Exercicios Praticos\ExercicioMVC\obj\Debug\net10.0\ExercicioMVC.sourcelink.json
